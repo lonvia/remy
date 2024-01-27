@@ -275,10 +275,15 @@ class TrashBin(Folder):
 class Document(Entry):
 
   def getPageId(self, pageNum):
-    if self.pages is None:
-      return str(pageNum)
-    else:
+    if self.pages is not None:
       return self.pages[pageNum]
+
+    if self.cPages is not None:
+      pages = self.cPages.get('pages')
+      if pages is not None:
+        return pages[pageNum]['id']
+
+    return str(pageNum)
 
   def getPage(self, pageNum, force=False):
     pages = self.pages
