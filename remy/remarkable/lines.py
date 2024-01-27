@@ -2,6 +2,7 @@ from collections import namedtuple
 import struct
 
 from remy.remarkable.constants import *
+import rmscene
 
 import json
 import os.path
@@ -55,6 +56,8 @@ def readLines(source):
       readStroke = readStroke3
     elif ver == 5:
       readStroke = readStroke5
+    elif ver == 6:
+      return 6, readV6Format(source)
     else:
       raise UnsupportedVersion("Remy supports notebooks in the version 3 and 5 format only")
     n_layers, _, _ = readStruct(S_PAGE, source)
@@ -75,3 +78,22 @@ def readLines(source):
 
   except struct.error:
     raise InvalidFormat("Error while reading page")
+
+
+def readV6Format(source):
+    strokes = []
+
+    source.seek(0)
+    for el in rmscene.read_blocks(source):
+        if isinstance(el, rmscene.SceneLineItemBlock)\
+           and isinstance(el.item, rmscene.CrdtSequenceItem)\
+           and el.item.deleted_length == 0:
+            line = el.item.value
+            segments = []
+            for pt in line.points:
+                segments.append(Segment(pt.x + 702, pt.y, pt.speed, pt.direction,
+                                        pt.width/4, pt.pressure))
+            strokes.append(Stroke(int(line.tool), int(line.color),
+                           None, line.thickness_scale, None, segments))
+
+    return [strokes]
