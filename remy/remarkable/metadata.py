@@ -415,12 +415,15 @@ Template = namedtuple('Template', ['name', 'retrieve'])
 class Notebook(Document):
 
   def _postInit(self):
-    try:
-      pfile = self.fsource.retrieve(self.uid, ext='pagedata')
-      with open(pfile) as f:
-        self._bg = [t.rstrip('\n') for t in f.readlines()]
-    except IOError:
-      pass
+    if self.cPages is not None and 'pages' in self.cPages:
+        self._bg = [p['template']['value'] for p in self.cPages['pages']]
+    else:
+        try:
+          pfile = self.fsource.retrieve(self.uid, ext='pagedata')
+          with open(pfile) as f:
+            self._bg = [t.rstrip('\n') for t in f.readlines()]
+        except IOError:
+          pass
 
   def _makePage(self, layers, version, pageNum):
     try:
