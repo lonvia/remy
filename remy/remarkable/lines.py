@@ -91,8 +91,8 @@ def readV6Format(source):
             line = el.item.value
             segments = []
             for pt in line.points:
-                segments.append(Segment(pt.x + 702, pt.y, pt.speed, pt.direction,
-                                        pt.width/4, pt.pressure))
+                segments.append(Segment(pt.x + 702, pt.y, pt.speed/4, pt.direction,
+                                        pt.width/4, pt.pressure/255))
             strokes.append(Stroke(int(line.tool), int(line.color),
                            None, line.thickness_scale, None, segments))
 
