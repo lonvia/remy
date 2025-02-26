@@ -95,5 +95,7 @@ def readV6Format(source):
                                         pt.width/4, pt.pressure/255))
             strokes.append(Stroke(int(line.tool), int(line.color),
                            None, line.thickness_scale, None, segments))
+        elif isinstance(el, rmscene.UnreadableBlock):
+            print(el)
 
     return [strokes]
